@@ -105,16 +105,49 @@ def simulate_interest(
                 "Simulation exceeded maximum iterations. Check your inputs."
             )
 
-    if export_to_csv:
-        export_results_to_csv(results, csv_filename)
+        if export_to_csv:
+            export_results_to_csv(
+                results,
+                csv_filename,
+                principal,
+                repayment,
+                downpayment,
+                annual_interest_rate,
+                months,
+            )
 
     return results
 
 
-def export_results_to_csv(results: typing.List[MonthlyResult], filename: str) -> None:
+def export_results_to_csv(
+    results: typing.List[MonthlyResult],
+    filename: str,
+    principal: float,
+    repayment: float,
+    downpayment: float,
+    annual_interest_rate: float,
+    months: int,
+) -> None:
     """Export the simulation results to a CSV file."""
     with open(filename, mode="w", newline="") as csv_file:
         writer = csv.writer(csv_file)
+
+        # Add input parameters as the first row
+        writer.writerow(
+            [
+                "Input Parameters",
+                f"Principal: {principal}",
+                f"Repayment: {repayment}",
+                f"Downpayment: {downpayment}",
+                f"Annual Interest Rate: {annual_interest_rate}",
+                f"Months: {months}",
+            ]
+        )
+
+        # Add a blank row for separation
+        writer.writerow([])
+
+        # Add headers for the results
         writer.writerow(
             [
                 "Month",
@@ -125,6 +158,8 @@ def export_results_to_csv(results: typing.List[MonthlyResult], filename: str) ->
                 "Interest Percentage",
             ]
         )
+
+        # Write the simulation results
         for result in results:
             writer.writerow(
                 [

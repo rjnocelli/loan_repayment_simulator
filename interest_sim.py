@@ -7,6 +7,7 @@ from dataclasses import dataclass
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
+
 @dataclass
 class MonthlyResult:
     month: int
@@ -53,7 +54,9 @@ def simulate_interest(
     if downpayment > principal:
         raise ValueError("Downpayment cannot exceed the principal.")
     if repayment <= 0 or annual_interest_rate < 0:
-        raise ValueError("Repayment must be positive and interest rate cannot be negative.")
+        raise ValueError(
+            "Repayment must be positive and interest rate cannot be negative."
+        )
 
     accumulated_interest = 0
     total_paid = 0
@@ -69,7 +72,9 @@ def simulate_interest(
             break
 
         if repayment <= monthly_interest_rate * balance:
-            raise ValueError("Repayment is too low to cover the monthly interest. Balance will grow indefinitely.")
+            raise ValueError(
+                "Repayment is too low to cover the monthly interest. Balance will grow indefinitely."
+            )
 
         month_counter += 1
         interest = calculate_monthly_interest(balance, monthly_interest_rate)
@@ -89,12 +94,16 @@ def simulate_interest(
                 balance=balance,
                 accumulated_interest=accumulated_interest,
                 total_paid=total_paid,
-                interest_percentage=(accumulated_interest / total_paid * 100) if total_paid > 0 else 0,
+                interest_percentage=(accumulated_interest / total_paid * 100)
+                if total_paid > 0
+                else 0,
             )
         )
 
         if month_counter > MAX_ITERATIONS:
-            raise RuntimeError("Simulation exceeded maximum iterations. Check your inputs.")
+            raise RuntimeError(
+                "Simulation exceeded maximum iterations. Check your inputs."
+            )
 
     if export_to_csv:
         export_results_to_csv(results, csv_filename)
@@ -106,16 +115,27 @@ def export_results_to_csv(results: typing.List[MonthlyResult], filename: str) ->
     """Export the simulation results to a CSV file."""
     with open(filename, mode="w", newline="") as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(["Month", "Interest", "Balance", "Accumulated Interest", "Total Paid", "Interest Percentage"])
+        writer.writerow(
+            [
+                "Month",
+                "Interest",
+                "Balance",
+                "Accumulated Interest",
+                "Total Paid",
+                "Interest Percentage",
+            ]
+        )
         for result in results:
-            writer.writerow([
-                result.month,
-                f"{result.interest:.2f}",
-                f"{result.balance:.2f}",
-                f"{result.accumulated_interest:.2f}",
-                f"{result.total_paid:.2f}",
-                f"{result.interest_percentage:.2f}",
-            ])
+            writer.writerow(
+                [
+                    result.month,
+                    f"{result.interest:.2f}",
+                    f"{result.balance:.2f}",
+                    f"{result.accumulated_interest:.2f}",
+                    f"{result.total_paid:.2f}",
+                    f"{result.interest_percentage:.2f}",
+                ]
+            )
     logging.info(f"Results exported to {filename}")
 
 
@@ -132,14 +152,42 @@ def log_results(results: typing.List[MonthlyResult]) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Simulate loan repayment with interest.")
-    parser.add_argument("--principal", type=float, required=True, help="Initial loan amount.")
-    parser.add_argument("--repayment", type=float, required=True, help="Monthly repayment amount.")
-    parser.add_argument("--downpayment", type=float, default=0, help="Initial payment to reduce the principal.")
-    parser.add_argument("--annual_interest_rate", type=float, required=True, help="Annual interest rate as a decimal (e.g., 0.07 for 7%).")
-    parser.add_argument("--months", type=int, default=12, help="Number of months to simulate (0 for indefinite).")
-    parser.add_argument("--export_to_csv", action="store_true", help="Export results to a CSV file.")
-    parser.add_argument("--csv_filename", type=str, default="simulation_results.csv", help="Name of the CSV file to export results.")
+    parser = argparse.ArgumentParser(
+        description="Simulate loan repayment with interest."
+    )
+    parser.add_argument(
+        "--principal", type=float, required=True, help="Initial loan amount."
+    )
+    parser.add_argument(
+        "--repayment", type=float, required=True, help="Monthly repayment amount."
+    )
+    parser.add_argument(
+        "--downpayment",
+        type=float,
+        default=0,
+        help="Initial payment to reduce the principal.",
+    )
+    parser.add_argument(
+        "--annual_interest_rate",
+        type=float,
+        required=True,
+        help="Annual interest rate as a decimal (e.g., 0.07 for 7%).",
+    )
+    parser.add_argument(
+        "--months",
+        type=int,
+        default=12,
+        help="Number of months to simulate (0 for indefinite).",
+    )
+    parser.add_argument(
+        "--export_to_csv", action="store_true", help="Export results to a CSV file."
+    )
+    parser.add_argument(
+        "--csv_filename",
+        type=str,
+        default="simulation_results.csv",
+        help="Name of the CSV file to export results.",
+    )
 
     args = parser.parse_args()
 
